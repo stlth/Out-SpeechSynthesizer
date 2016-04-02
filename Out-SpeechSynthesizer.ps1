@@ -24,7 +24,7 @@
 .PARAMETER Rate
    Sets the speaking rate of speech. Defaults to (0).
 .PARAMETER Volume
-   Sets to output volume. Defaults to (100).
+   Sets the output volume. Defaults to (100).
 .PARAMETER Mode
    Sets the speech to speak synchronously or asynchronously called. Defaults to (Synchronous).
 .EXAMPLE

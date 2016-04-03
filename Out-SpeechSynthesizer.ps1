@@ -14,26 +14,16 @@
 .EXTERNALSCRIPTDEPENDENCIES 
 .RELEASENOTES
    Inspired by: https://gallery.technet.microsoft.com/scriptcenter/Out-Voice-1be16d5e
-
 .Synopsis
    Allow PowerShell to speak back to you.
 .DESCRIPTION
    Loads the System.Speech assemblies to allow you to pipeline information to an audible output.
-.PARAMETER InputObject
-   Data that will be spoken.
-.PARAMETER Rate
-   Sets the speaking rate of speech. Defaults to (0).
-.PARAMETER Volume
-   Sets the output volume. Defaults to (100).
-.PARAMETER Mode
-   Sets the speech to speak synchronously or asynchronously called. Defaults to (Synchronous).
 .EXAMPLE
    "Hello world." | Out-SpeechSynthesizer
 #>
 function Out-SpeechSynthesizer
 {
     [CmdletBinding(DefaultParameterSetName='Default', 
-                  SupportsShouldProcess=$true, 
                   PositionalBinding=$false,
                   ConfirmImpact='Medium')]
     [Alias("Out-Voice")]
@@ -47,24 +37,31 @@ function Out-SpeechSynthesizer
         [ValidateNotNullOrEmpty()]
         [Alias("Statement")] 
         [string[]]
+        # Data that will be spoken.
         $InputObject,
         [Parameter(Mandatory=$false,
                    Position=1,
+                   HelpMessage='Enter data to speak:',
                    ParameterSetName='Default')]
         [ValidateRange(-10,10)]
         [int]
+        # Sets the speaking rate of speech. Defaults to (0).
         $Rate=0,
         [Parameter(Mandatory=$false,
                    Position=2,
+                   HelpMessage='Enter rate of speech:',
                    ParameterSetName='Default')]
         [ValidateRange(1,100)]
         [int]
+        # Sets the output volume. Defaults to (100).
         $Volume=100,
         [Parameter(Mandatory=$false,
                    Position=3,
+                   HelpMessage='Enter volume:',
                    ParameterSetName='Default')]
         [ValidateSet('Synchronous','Asynchronous')]
         [string]
+        # Sets the speech to speak synchronously or asynchronously called. Defaults to (Synchronous).
         $Mode='Synchronous'
     )
     DynamicParam
@@ -75,9 +72,9 @@ function Out-SpeechSynthesizer
         $AttributeCollection = New-Object -TypeName System.Collections.ObjectModel.Collection[System.Attribute]
         # Create and set the parameters' attributes:
         $ParameterAttribute = New-Object -TypeName System.Management.Automation.ParameterAttribute
-        $ParameterAttribute.HelpMessage = 'Select a voice:'
         $ParameterAttribute.Mandatory = $false
         $ParameterAttribute.Position = 4
+        $ParameterAttribute.HelpMessage = 'Select a voice:'
         $ParameterAttribute.ParameterSetName = 'Default'
         $AttributeCollection.Add($ParameterAttribute)
         # Generate the list of available voices and set the ValidateSet
@@ -123,24 +120,21 @@ function Out-SpeechSynthesizer
     } # END: Begin
     Process
     {
-        if ($pscmdlet.ShouldProcess("Target", "Operation"))
-        {
-            foreach ($statement in $InputObject)
-            {                
-                switch($Mode)
+        foreach ($statement in $InputObject)
+        {                
+            switch($Mode)
+            {
+                'Synchronous'
                 {
-                    'Synchronous'
-                    {
-                        Write-Verbose -Message "'Synchronous' mode selected. Speaking: `'$statement`'"
-                        $synth.Speak( $($statement | Out-String) ) | Out-Null
-                    }
-                    'Asynchronous'
-                    {
-                        Write-Verbose -Message "'Asynchronous' mode selected. Speaking: `'$statement`'"
-                        $synth.SpeakAsync( $($statement | Out-String) ) | Out-Null
-                    }
-                default{}
+                    Write-Verbose -Message "'Synchronous' mode selected. Speaking: `'$statement`'"
+                    $synth.Speak( $($statement | Out-String) ) | Out-Null
                 }
+                'Asynchronous'
+                {
+                    Write-Verbose -Message "'Asynchronous' mode selected. Speaking: `'$statement`'"
+                    $synth.SpeakAsync( $($statement | Out-String) ) | Out-Null
+                }
+            default{}
             }
         }
     } # END: Process

@@ -96,7 +96,7 @@ function Out-SpeechSynthesizer
         $VoiceSelected = $PsBoundParameters[$ParameterName]
         
         Write-Verbose -Message 'Listing Parameters utilized:'
-        $PSBoundParameters.GetEnumerator() | ForEach-Object { Write-Verbose -Message "$($PSItem)" }
+        $PSBoundParameters.GetEnumerator() | ForEach-Object -Process { Write-Verbose -Message "$($PSItem)" }
         
         Write-Verbose -Message 'Adding System.Speech assembly.'
         Add-Type -AssemblyName System.Speech

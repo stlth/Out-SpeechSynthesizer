@@ -82,8 +82,8 @@ function Out-SpeechSynthesizer
         $temp = New-Object -TypeName System.Speech.Synthesis.SpeechSynthesizer
         $voiceSet = $temp.GetInstalledVoices().VoiceInfo | Select-Object -ExpandProperty Name
         $temp.Dispose()
-        Remove-Variable -Name temp
-        $ValidateSetAttribute = New-Object System.Management.Automation.ValidateSetAttribute($voiceSet)
+        Remove-Variable -Name temp -ErrorAction 'SilentlyContinue'
+        $ValidateSetAttribute = New-Object -TypeName System.Management.Automation.ValidateSetAttribute($voiceSet)
         $AttributeCollection.Add($ValidateSetAttribute)
         # Create and return the dynamic parameter
         $RuntimeParameter = New-Object -TypeName System.Management.Automation.RuntimeDefinedParameter($ParameterName,[string],$AttributeCollection)
